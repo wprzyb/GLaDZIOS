@@ -36,7 +36,7 @@ gladzios = Cinch::Bot.new do
 		m.reply "#{m.user.nick}: pong"
 	end
 	on :message, '.version' do |m|
-		version = system('git describe --always HEAD').to_s
+		version = system('git describe --always HEAD')
 		m.reply "Bot ircowy dla Hackerspace Kraków. wersja: #{version}"
 	end
 	on :message, /^.8b (.+)/ do |m|
@@ -51,8 +51,8 @@ gladzios = Cinch::Bot.new do
 		m.reply "Rzut kostką dał: #{rand(query.to_i)+1}"
 	end
 		on :message, /^.pick (.+) (.+)/ do |m, q1, q2|
-		wybory = [q1, q2]
-		m.reply "Lepiej #{wybory[rand(wybory.length)]}"
+		picks = [q1, q2]
+		m.reply "Lepiej #{picks[rand(picks.length)]}"
 	end
 	on :message, /(https?:\/\/[\S]+)/ do |m, query|
 		if title(query) != nil then title = title(query) else title = "(nieznany)" end
