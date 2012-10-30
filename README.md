@@ -1,9 +1,9 @@
 # GLaDZIOS
 ===========
-- - -
+* * *
 ### GLaDZIOS IRC bot for Hackerspace Kraków
 
-- - -
+* * *
 ##TODO
 * * *
 ####GLaDZIOS should be able to do:
