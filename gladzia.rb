@@ -8,14 +8,22 @@ require 'cinch'
 require 'open-uri'
 
 def tytul(strona)
-	URI.parse(strona).open do |f|
-		f.each {|l| if md = (/<title>\s*(.*)\s*<\/title>/iu).match(l) then return md[1] end }
-	end
-	if md[1] == nil then return "Chuj" end
+  URI.parse(strona).open do |f|
+    f.each_line do |l|
+      if l =~ /<title>\s*(.*)\s*<\/title>/iu
+        return $1
+      end
+    end
+  end
+  nil
 end
 
 def ciach(link)
+	if link =~ /(.*)ujeb\.se(.*)/
+	return "... zaraz zaraz, co ty mi tu dajesz ?"
+	else
 	return open('http://ujeb.se/a/add?u=' + link, "UserAgent" => "Ruby Script").read
+	end
 end
 
 
@@ -53,7 +61,13 @@ gladzios = Cinch::Bot.new do
 	end
 	
 	on :message, /(https?:\/\/[\S]+)/ do |m, query|
-		m.reply "#{m.user.nick} wysłał: #{tytul(query)} - skróciłam\: #{ciach(query)}"
+			if tytul(query) != nil
+				title = tytul(query)
+			else 
+				title = "coś czego nie znam"
+			end
+			
+		m.reply "#{m.user.nick} wysłał: #{title} - skróciłam\: #{ciach(query)}"
 	end
 
 end
