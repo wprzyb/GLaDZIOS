@@ -2,13 +2,17 @@
 #
 # GLaDZIOS - IRC bot for HSCracow
 #
-#	Wejq & Skrzyp
+# (C) 2012 Jakub Skrzypnik
+# (C) 2012 Wiktor Przybylski
 #
+# This program is licensed under GNU General Public License
+#
+
 require 'cinch'
 require 'open-uri'
 
-def tytul(strona)
-  URI.parse(strona).open do |f|
+def title(page)
+  URI.parse(page).open do |f|
     f.each_line do |l|
       if l =~ /<title>\s*(.*)\s*<\/title>/iu
         return $1
@@ -18,11 +22,11 @@ def tytul(strona)
   nil
 end
 
-def ciach(link)
+def cut(link)
 	if link =~ /(.*)ujeb\.se(.*)/
-	return "... zaraz zaraz, co ty mi tu dajesz ?"
+	return "already shortened!"
 	else
-	return open('http://ujeb.se/a/add?u=' + link, "UserAgent" => "Ruby Script").read
+	return open('http://ujeb.se/a/add?u=' + link, "UserAgent" => "GLaDZIOS").read
 	end
 end
 
@@ -44,7 +48,7 @@ gladzios = Cinch::Bot.new do
 	end
 
 	on :message, '.version' do |m|
-		version = "devtest2"
+		version = "git-roll"
 		m.reply "GLaDZIOS Hackerspace IRCbot. Version: #{version}"
 		debug ":: [version] by #{m.user.nick}"
 	end
@@ -56,7 +60,7 @@ gladzios = Cinch::Bot.new do
 	end
 
 	on :message, /^.quit/ do |m|
-		m.reply "Goodbye!"
+		m.reply "Stopping GLaDZIOS..."
 		gladzios.quit
 	end
 	
@@ -64,10 +68,11 @@ gladzios = Cinch::Bot.new do
 			if tytul(query) != nil
 				title = tytul(query)
 			else 
-				title = "coś czego nie znam"
+				title = "Unknown"
 			end
 			
-		m.reply "#{m.user.nick} wysłał: #{title} - skróciłam\: #{ciach(query)}"
+		m.reply "#{m.user.nick} posted a link to: #{title} - shorten URL: #{ciach(query)}"
+	debug ":: [url] #{query} by #{m.user.nick}"
 	end
 
 end
