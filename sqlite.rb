@@ -12,6 +12,7 @@
 #require 'open-uri'
 require 'sqlite3'
 
+<<<<<<< HEAD
 def check(file)
 
 if !File.exists?(file)
@@ -42,6 +43,15 @@ def sel(file, query)
 	end
 	return row
 	database.close if database
+=======
+def check(file, type)
+	if !File.exists?(file) then db = SQLite3::Database.new file end
+	database = SQLite3::Database.open file
+	request = database.prepare("SELECT * FROM sqlite_master WHERE type="table";")
+	query = request.execute
+	tables = Array.new
+	query.each do |tables| puts tablice.join "\s" end
+>>>>>>> fcdb95863b3a5316a3790d2ce6332c0304d84840
 end
 
 ##########################################################################################
