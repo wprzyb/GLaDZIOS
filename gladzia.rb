@@ -46,7 +46,7 @@ gladzios = Cinch::Bot.new do
 		m.reply "GLaDZIOS idzie spać..."
 		gladzios.quit
 	end
-		on :message, /^.dice (.+)/ do |m, query|
+		on :message, /^.dice(\s\d+)?/ do |m, query|
 		if query == nil then query = 6 end
 		m.reply "Rzut kostką dał: #{rand(query.to_i)+1}"
 	end
