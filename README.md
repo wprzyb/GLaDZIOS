@@ -13,7 +13,10 @@ GLaDZIOS should be able to do:
 * MEMO
 * Seen
 * describe
-* pick			DONE
-* dice roll		DONE / make it flexible, fool
-* good coffee		in progress
+* pick
+ * DONE
+* dice roll
+ * DONE
+* good coffee
+ * in progress
 
