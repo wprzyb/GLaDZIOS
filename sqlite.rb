@@ -13,23 +13,10 @@
 require 'sqlite3'
 
 def check(file, type)
-
-if !File.exists?(file)
-	db = SQLite3::Database.new file
-end
-
-database = SQLite3::Database.open file
-request = database.prepare("SELECT * FROM sqlite_master WHERE type="table";")
-query = request.execute
-
-
-
-tablice = Array.new
-
-query.each do |tablice|
-	puts tablice.join "\s"
-	end
-
-
-
+	if !File.exists?(file) then db = SQLite3::Database.new file end
+	database = SQLite3::Database.open file
+	request = database.prepare("SELECT * FROM sqlite_master WHERE type="table";")
+	query = request.execute
+	tables = Array.new
+	query.each do |tables| puts tablice.join "\s" end
 end

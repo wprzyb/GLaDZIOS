@@ -46,11 +46,11 @@ gladzios = Cinch::Bot.new do
 		m.reply "GLaDZIOS idzie spać..."
 		gladzios.quit
 	end
-		on :message, /^.dice(\s\d+)?/ do |m, query|
+	on :message, /^.dice(\s\d+)?/ do |m, query|
 		if query == nil then query = 6 end
 		m.reply "Rzut kostką dał: #{rand(query.to_i)+1}"
 	end
-		on :message, /^.pick (.+) (.+)/ do |m, q1, q2|
+	on :message, /^.pick (.+) (.+)/ do |m, q1, q2|
 		picks = [q1, q2]
 		m.reply "Lepiej #{picks[rand(picks.length)]}"
 	end
