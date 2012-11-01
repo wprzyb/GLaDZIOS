@@ -2,7 +2,7 @@
 #
 #	sqlite.rb - SQLite module for GLaDZIOS - IRC bot for HSCracow
 #
-# (C) 2012 Jakub Skrzypnik
+#
 # (C) 2012 Wiktor Przybylski
 #
 # This program is licensed under GNU General Public License
@@ -12,17 +12,16 @@
 #require 'open-uri'
 require 'sqlite3'
 
-<<<<<<< HEAD
 def check(file)
 
 if !File.exists?(file)
-	db = SQLite3::Database.new file
+	database = SQLite3::Database.new file
 end
 
 database = SQLite3::Database.open file
-request = database.prepare("SELECT * FROM sqlite_master WHERE type = \"table\" ; ")
+request = database.prepare('SELECT * FROM sqlite_master WHERE type = "table" ; ')
 query = request.execute
-if query != nil then return 1 end
+if query != nil then return 1 else return nil end
 
 database.close if database
 
@@ -35,7 +34,7 @@ def exe(file, query)
 end
 
 def sel(file, query)
-	database = SQLite::Database.open
+	database = SQLite3::Database.open file
 	request = database.prepare(query)
 	returned = request.execute
 	returned.each do |row|
@@ -43,35 +42,64 @@ def sel(file, query)
 	end
 	return row
 	database.close if database
-=======
-def check(file, type)
-	if !File.exists?(file) then db = SQLite3::Database.new file end
-	database = SQLite3::Database.open file
-	request = database.prepare("SELECT * FROM sqlite_master WHERE type="table";")
-	query = request.execute
-	tables = Array.new
-	query.each do |tables| puts tablice.join "\s" end
->>>>>>> fcdb95863b3a5316a3790d2ce6332c0304d84840
 end
 
-##########################################################################################
-#																						 #
-#	Real magic begins thar. Since there it will be only bot command handling functions	 #
-#	which are using sqlite All above is essential.										 #
-#																						 #
-##########################################################################################
-																						 #
-def seen_table_generate																	 #
-	database = SQLite::Database.open													 #
-#	database.execute "CREATE TABLE IF NOT EXISTS ..."									 #
-	database.close if database															 #
-end																						 #
-																						 #
-def seen_memo_generate																	 #
-	database = SQLite::Database.open													 #
-#	database.execute "CREATE TABLE IF NOT EXISTS ..."									 #
-	database.close if database															 #
-end																						 #
-##########################################################################################
-																						 #
-																						 
+#########################################################
+#														#
+#	Real magic begins thar. Since there it will be 		#
+#	only bot command handling functions	 				#
+#	which are using sqlite. All above is essential.  	#
+#														#
+#########################################################
+														#
+def memo_table_generate(file)							#
+	database = SQLite3::Database.open file				#
+	database.execute "CREATE TABLE IF NOT EXISTS `memo` (`id` int(11) NOT NULL,'time` int(11) NOT NULL,`sender` varchar(10) NOT NULL,`receiver` varchar(10) NOT NULL,`memo` varchar(255) NOT NULL, PRIMARY KEY (`id`);"
+	database.close if database							#
+end														#
+														#
+def seen_table_generate(file)							#
+	database = SQLite3::Database.open file				#
+	database.execute "CREATE TABLE IF NOT EXISTS `seen` (`id` int(11) NOT NULL,'time` int(11) NOT NULL,`who` varchar(10) NOT NULL,`content` varchar(255) NOT NULL, PRIMARY KEY (`id`);"
+	database.close if database							#
+end														#
+#########################################################
+														#
+def seen_check_user(who, where)
+
+	if check(where) == nil then seen_table_generate(where) end
+	checked = sel(where, "SELECT * FROM seen WHERE who=#{who}")
+	if checked != nil then return 1 else return nil end
+
+end	
+
+def seen_check(who, where)
+
+	if seen_check_user(who, where) == nil then return "Never seen before"
+	end
+
+end
+
+=begin
+
+def seen_add(who, what, where)
+
+
+
+end
+
+def memo_check(who, where)
+
+
+
+end
+
+def memo_add(who, what, where)
+
+
+
+end	
+
+=end
+													 
+seen_check_user("skrzyp", "file.db")
