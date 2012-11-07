@@ -15,43 +15,55 @@
 #require 'open-uri'
 require 'sqlite3'
 
+def handler(feedback)
+
+	if feedback != nil								# If there is a SQLite3::Exception 
+		puts feedback								# Debug: puts that exception
+		if feedback =~ /^no such table*/			# If there is problem with missing table
+			tablename = /^no such table: (.+)/		# Than catch name of that table
+			return "notable_#{tablename}"			# And return it so i can assume if it's notable problem
+		end
+	end
+	
+end
+
 def exe(file, query)
-	database = SQLite3::Database.open file
-	database.execute(query)
-	database.close if database
+	
+	begin
+		database = SQLite3::Database.open file 		# Self explanatory
+		database.execute(query)                     #
+		puts "Executing that query"					# 
+	rescue SQLite3::Exception => e 					# Exception catching
+       	puts "Exception occured"					# 
+    	puts e 										# Which exception is that
+	ensure
+		database.close if database
+		puts "Database closed after executing"
+	end
+
 end
 
 def sel(file, query)
-	table = 0
-	database = SQLite3::Database.open file
-	request = database.prepare(query)
-	returned = request.execute
-	returned.each do |row|
-		row.join "\s"
-		table = row
-	end
-	return table	
-	if request then request.close end
-	if database then database.close end
-end
+	begin
+		table = 0								#
+		database = SQLite3::Database.open file 	#
+		request = database.prepare(query)		#
+		returned = request.execute 				#
+		
+		returned.each do |row| 					#
+			row.join "\s"    					#
+			table = row 						#
+		end 									#
 
-def check(file)
-	if !File.exists?(file) then
-		database = SQLite3::Database.new file
-		puts "Database generated!"
+		return table 							# Problematic piece of code, Skrzyp help meh
+		return handler(SQLite3::Exception) 		# Double return, mhm
+	rescue SQLite3::Exception => e 				# But i tried to get exception outside rescue, and it didn't work well
+		puts e 									# 
+	ensure
+		if request then request.close end
+		if database then database.close end
 	end
-	database = SQLite3::Database.open file
-	puts "Database opened!"
-	query = sel(file, 'SELECT * FROM sqlite_master WHERE type = "table" ; ')
-	puts "Evaluated #{query.to_s} query!"
-	if query != nil then return 1 else return nil end
-	database.close if database
-	puts "Database closed!"
 end
-
-##	Real magic begins thar. Since there it will be 
-##	only bot command handling functions
-##	which are using sqlite. All above is essential.
 
 def memo_table_generate(file)
 	database = SQLite3::Database.open file	
@@ -67,12 +79,45 @@ def seen_table_generate(file)
 	#< if database then database.close puts "s-OK." end >#
 end
 
+
+def check(file)
+	begin
+		if !File.exists?(file) then
+			database = SQLite3::Database.new file
+			puts "Database generated!"
+		end
+
+		database = SQLite3::Database.open file
+		puts "Database opened!"
+		query = sel(file, 'SELECT * FROM sqlite_master WHERE type = "table" ; ')
+		puts query
+		if query.kind_of?(Array) == true then 							# sel() should return an array, if it doesn't, it's exception return that i want to mess with
+			puts "Checked for tables, it has them"						#
+			puts "Here you are" + query.to_s							# 
+		else															# There \/
+				if query =~ /notable_memo/ then 
+					puts "No memo table around, i should make it"
+					memo_table_generate(file)
+				end
+				if query =~ /notable_seen/ then
+					puts "No seen table around, i should make it"
+					seen_table_generate(file)
+				end
+		end
+  	
+
+	ensure	
+		database.close if database
+		puts "Database closed!"
+	end
+end
+
+
+
 def seen_check_user(who)
 	base = "base.db"
 	base_check = check(base)
-	if (base_check.to_s == nil) then seen_table_generate(base) end
-	checkuser = sel(base, "SELECT * FROM seen WHERE who=#{who}")
-	if checkuser != nil then return 1 else return nil end
+
 end	
 
 def seen_check(who)
@@ -91,5 +136,6 @@ end
 
 # seen_table_generate("base.db")
 # sel("base.db", 'SELECT * FROM sqlite_master WHERE type = "table" ; ')
-# seen_table_generate("base2.db")
-seen_check_user("Skrzyp")
+#seen_table_generate("base.db")
+check("base2.db")
+#seen_check_user("Skrzyp")
