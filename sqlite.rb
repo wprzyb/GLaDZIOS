@@ -15,6 +15,7 @@
 require 'sqlite3'
 require 'time' #i highly require some time...
 
+class Sqlite
 
 def exe(file, query)
  
@@ -34,14 +35,14 @@ end
 
 def sel(file, query)
  begin
-  table = 0  
+  table = [] 
   database = SQLite3::Database.open file
   request = database.prepare(query) 
   returned = request.execute
   
   returned.each do |row|   
    row.join "\s"   
-   table = row  
+   table += row  
   end    
 	puts "#{table} - 43"
   return table        					# Problematic piece of code, Skrzyp help meh
@@ -143,4 +144,4 @@ def seen_add(who,what,time)
     exe("base.db", query)
 end
 
-
+end
