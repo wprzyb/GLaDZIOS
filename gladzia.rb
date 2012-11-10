@@ -10,6 +10,9 @@
 
 require 'cinch'
 require 'open-uri'
+$LOAD_PATH << '.'
+require 'sqlite.rb'
+
 replies = ['Wszystko wskazuje na to, że tak','Tak','Mam wątpliwości, spytaj ponownie', 'Bez wątpienia',	'Moje źródła mówią, że nie','Sadze, ze raczej tak', 'Ręczę za to', 'Skoncentruj się, i zapytaj jeszcze raz','Perspektywy są raczej słabe','Zdecydowanie, definitywnie tak', 'Teraz lepiej nie mówić', 'Bardzo wątpliwe','Tak, zdecydowanie', 'Tak, to pewne', 'Nie moąna teraz tego przewidzieć', 'Bardzo prawdopodobne','Zadaj pytanie później', 'Odpowiedz brzmi: Nie.', 'Są ku temu dobre perspektywy','Nie licz na to']
 def title(page)
   URI.parse(page).open do |f|
@@ -22,6 +25,7 @@ def cut(link)
 		return open('http://ujeb.se/a/add?u=' + link, "UserAgent" => "GLaDZIOS").read
 	end
 end
+
 gladzios = Cinch::Bot.new do
 	configure do |c|
 		c.server = 'irc.freenode.org'
@@ -36,7 +40,7 @@ gladzios = Cinch::Bot.new do
 		m.reply "#{m.user.nick}: pong"
 	end
 	on :message, '.version' do |m|
-		version = system('git describe --always HEAD')
+		version = `git describe --always HEAD`
 		m.reply "Bot ircowy dla Hackerspace Kraków. wersja: #{version}"
 	end
 	on :message, /^.8b (.+)/ do |m|
