@@ -68,6 +68,13 @@ def seen_table_generate(file)
  #< if database then database.close puts "s-OK." end >#
 end
 
+def describe_table_generate(file)
+ database = SQLite3::Database.open file
+ database.execute "CREATE TABLE 'desc' ('command' varchar(20) NOT NULL,'content' varchar(255) NOT NULL);"
+ puts "Seen table generated!"
+ #< if database then database.close puts "s-OK." end >#
+end
+
 
 def check(file)
  begin
@@ -139,6 +146,40 @@ def seen_add(who,what,time)
     query = "INSERT INTO seen VALUES (\"#{who}\", \"#{what}\", #{time})"
  else
     query = "UPDATE seen SET time=\"#{time}\", content=\"#{what}\" WHERE who=\"#{who}\""
+ end
+
+    exe("base.db", query)
+end
+
+def seen_check_base(arg)
+ base = "base.db"
+ base_check = "WTF"
+ until base_check == "OK" # until base check don't return that it's generated and working keep checking&generating it
+  base_check = check(base)
+  puts "Zwrocila #{base_check}" # and inform me about it
+ end
+
+ask = "SELECT * FROM desc WHERE command=\"#{arg}\""
+
+checked = sel(base,ask)
+return checked
+
+
+end 
+
+def describe_check(what)
+ if describe_check_base(what) == 0 then return "No such command" 
+ else 
+  table = describe_check_base(what)
+  return table  
+ end
+end
+
+def describe_add(command,content)
+ if describe_check_base(who) == 0
+    query = "INSERT INTO desc VALUES (\"#{command}\", \"#{content}\")"
+ else
+    query = "UPDATE desc SET content=\"#{content}\" WHERE command=\"#{command}\""
  end
 
     exe("base.db", query)
